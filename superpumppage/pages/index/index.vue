@@ -103,7 +103,7 @@
 					curr_count: 0
 				},
 				maxId: 0,
-				Host: "http://67.213.119.5:9991",
+				Host: "http://bullapi.pumpfind.homes",
 				walletAddresses: [],
 				oldWalletAddresssed: [],
 				tbTime: 0,

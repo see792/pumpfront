@@ -1,9 +1,12 @@
 <template>
-	<view class="toptt">实时代币检测-2.0前十持仓检测版（前十7个诈骗+疑似机器人不推+黑名单+捆绑+三个以下代币忽略+重复度60%+前高30%+DEV20%以上持仓不推+创建代币时间20分钟以上+无创创建过代币）</view>
+	<view class="toptt">实时代币检测-2.0前十持仓检测版（前十7个诈骗+疑似机器人不推+黑名单+捆绑+三个以下代币忽略+重复度60%+前高30%+DEV20%以上持仓不推+创建代币时间20分钟以上+无创创建过代币）
+	</view>
 	<view class="topBt">
 		<button type="primary" class="opBt" size="mini" @click="buyOp('1')">开始购买</button>
 		<button type="primary" class="opBt" size="mini" @click="buyOp('0')">停止购买</button>
 		<button type="primary" class="opBt" size="mini" @click="tokenAnyseClick()">地址分析</button>
+
+		<button type="primary" class="opBt" size="mini" @click="tokenHistoryAnyseClick()">历史分析</button>
 		<button type="primary" class="opBt" size="mini" @click="clearClick()">清除</button>
 		<button type="primary" class="opBt" size="mini" @click="twitterClick()">推特管理</button>
 		<button type="primary" class="opBt" size="mini" @click="addressClick()">地址管理</button>
@@ -784,6 +787,27 @@
 
 			},
 
+			tokenHistoryAnyseClick() {
+				uni.showModal({
+					title: '分析地址',
+					content: '',
+					placeholderText: "请输入地址",
+					confirmText: "开始",
+					editable: true,
+					success: (res) => {
+						if (res.confirm) {
+							console.log('用户点击确定');
+							console.log(res.content)
+							this.analyseHisToken(res.content)
+
+						} else if (res.cancel) {
+							console.log('用户点击取消');
+						}
+					}
+				});
+
+			},
+
 			tokenAnyseClick() {
 				uni.showModal({
 					title: '分析地址',
@@ -802,6 +826,40 @@
 						}
 					}
 				});
+			},
+			analyseHisToken(tk) {
+
+				uni.showLoading({
+					title: "分析中",
+					mask: true
+				})
+				uni.request({
+					url: this.Host + "/api/v1/test/history_detail?address=" + tk, // 请求地址
+					method: 'GET', // 请求方式
+					timeout: 120000,
+					success: (res) => { // 请求成功回调函数
+
+						uni.hideLoading()
+						if (res.data.code == 1) {
+							if ((res.data.data.token + "").length > 10) {
+								this.tkInfo = res.data.data
+								this.showAnyDialog = true
+							} else {
+								this.adddressInfo = res.data.data
+								this.showAddressDialog = true
+							}
+
+						} else {
+							uni.showToast({
+								title: res.data.msg
+							})
+						}
+					},
+					fail: () => {
+						uni.hideLoading()
+					}
+				})
+
 			},
 			analyseToken(tk) {
 
@@ -864,12 +922,12 @@
 					success: (res) => { // 请求成功回调函数
 						if (res.data.code == 1) {
 							var st = "开启"
-							if(!res.data.data.open){
+							if (!res.data.data.open) {
 								st = "关闭"
 							}
-							var logsrt = ["机器人状态:" +st]
-							
-							this.logArr =logsrt.concat(res.data.data.log.reverse().slice(0, 200))
+							var logsrt = ["机器人状态:" + st]
+
+							this.logArr = logsrt.concat(res.data.data.log.reverse().slice(0, 200))
 						}
 
 					},
@@ -986,7 +1044,7 @@
 						backgroundColor: "yellow"
 					}
 				}
-				
+
 				if (it.trans && it.trans.time > 0) {
 					var nowt = new Date().getTime() / 1000
 
@@ -998,7 +1056,7 @@
 
 				}
 				return {
-				
+
 				}
 			},
 			clearClick() {
@@ -1334,14 +1392,14 @@
 					}
 				});
 			},
-			detailPercent(addr){
-				if(addr.ten_token_counts==0){
+			detailPercent(addr) {
+				if (addr.ten_token_counts == 0) {
 					return "(0%)"
 				}
-				
-				var p = (addr.ten_token_un_counts/addr.ten_token_counts*100).toFixed(2)
-				
-				return "("+p+"%)"
+
+				var p = (addr.ten_token_un_counts / addr.ten_token_counts * 100).toFixed(2)
+
+				return "(" + p + "%)"
 			},
 
 			deleteTwitter(index) {

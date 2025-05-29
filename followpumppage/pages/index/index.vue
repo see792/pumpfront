@@ -190,7 +190,7 @@
 				editingAddress: null, // 当前编辑的地址（用于新增或编辑）
 				showDialog: false, // 控制弹窗是否显示
 				maxId: 0,
-				Host: "http://67.213.119.5:52111",
+				Host: "http://followapi.pumpfind.homes",
 				walletAddresses: [],
 				oldWalletAddresssed: [],
 				tbTime: 0,
@@ -577,7 +577,8 @@
 										title: "请求失败"
 									})
 
-								}
+								},
+								
 							})
 						}
 					}
@@ -736,14 +737,14 @@
 						}
 						setTimeout(() => {
 							this.updateInfo()
-						}, 1000)
+						}, 500)
 
 					},
 					fail: () => {
 
 						setTimeout(() => {
 							this.updateInfo()
-						}, 1000)
+						}, 500)
 					}
 				})
 
